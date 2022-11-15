@@ -12,19 +12,14 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "baseUrl": "./",
     "paths": {
-      "@server/*": [ "server/*" ],
-      "@shared/*": [ "shared/*" ]
+      "@server/*": ["server/*"],
+      "@shared/*": ["shared/*"]
     },
     "allowJs": true,
     "declaration": false
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-  ]
+  "exclude": ["node_modules", "dist"]
 }
