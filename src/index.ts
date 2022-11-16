@@ -34,6 +34,8 @@ app.use(pinoLogger);
 app.use("/", wsRouter);
 
 const ws = new WebSocket.Server({ server });
+app.set("socket", ws);
+
 const bootstrap = async () => {
   try {
     ws.on("connection", (ws: WebSocket) => {
@@ -49,6 +51,8 @@ const bootstrap = async () => {
 
       ws.send("websocket server connected");
     });
+
+    ws.on("message", (msg) => console.log(msg));
 
     server.listen(locals.PORT, () =>
       console.log(`server started on ${locals.PORT}`)

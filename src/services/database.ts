@@ -1,3 +1,6 @@
 import JSONdb from "simple-json-db";
+import path from "path";
 
-export const db = new JSONdb("./src/services/server_files.json");
+const dbLocation = path.join(process.cwd(), "./src/services/server_files.json");
+
+export const db = new JSONdb(dbLocation);
