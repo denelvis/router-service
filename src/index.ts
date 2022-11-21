@@ -17,6 +17,8 @@ import bodyParser from "body-parser";
 import { logMiddleware } from "./logger/log.middleware";
 import * as locals from "./locals";
 import wsRouter from "./apis/wss.route";
+import { videoRules } from "./validator";
+import { make } from "simple-body-validator";
 
 const app = express();
 const pinoLogger = logMiddleware("wss");
@@ -28,7 +30,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(urlencoded({ extended: false }));
 app.use(requestIp.mw({ attributeName: "ip" }));
-
 app.use(pinoLogger);
 
 app.use("/", wsRouter);
@@ -36,16 +37,21 @@ app.use("/", wsRouter);
 const ws = new WebSocket.Server({ server });
 app.set("socket", ws);
 
+const clients = {};
+
 const bootstrap = async () => {
   try {
     ws.on("connection", (ws: WebSocket) => {
       const id = randomUUID();
+      clients[id] = ws;
+
       ws.on("message", (msg: string) => {
         console.log("receive:", msg.toString());
         ws.send(`${msg} was sent`);
       });
 
       ws.on("close", () => {
+        delete clients[id];
         console.log(`${id} left`);
       });
 
@@ -62,6 +68,7 @@ const bootstrap = async () => {
       ws.close();
       process.exit();
     });
+    
   } catch (e) {
     console.log(e);
   }
