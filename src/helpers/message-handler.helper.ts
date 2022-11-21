@@ -1,7 +1,7 @@
 import { make } from "simple-body-validator";
 import { serviceId } from "../locals";
 
-import { dbOwn } from "../services/database";
+import { dbMain, dbOwn } from "../services/database";
 import { fileRules, videoRules } from "../validator";
 
 export const messageHandlerHelper = (id: string, msg: string) => {
@@ -20,4 +20,6 @@ export const messageHandlerHelper = (id: string, msg: string) => {
   }
 
   dbOwn.set(id, msg);
+  const allFiles = dbOwn.JSON();
+  dbMain.set(serviceId, JSON.stringify(allFiles));
 };

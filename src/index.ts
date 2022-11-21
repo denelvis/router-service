@@ -18,7 +18,8 @@ import { logMiddleware } from "./logger/log.middleware";
 import * as locals from "./locals";
 import wsRouter from "./apis/wss.route";
 import { messageHandlerHelper } from "./helpers";
-import { dbOwn } from "./services/database";
+import { dbMain, dbOwn } from "./services/database";
+import { serviceId } from "./locals";
 
 const app = express();
 const pinoLogger = logMiddleware("wss");
@@ -54,6 +55,8 @@ const bootstrap = async () => {
       ws.on("close", () => {
         delete clients[id];
         dbOwn.delete(id);
+        const allFiles = dbOwn.JSON();
+        dbMain.set(serviceId, JSON.stringify(allFiles));
         console.log(`${id} left`);
       });
 
