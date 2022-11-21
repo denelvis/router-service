@@ -1,10 +1,10 @@
 import { make } from "simple-body-validator";
 import { serviceId } from "../locals";
 
-import { db } from "../services/database";
+import { dbOwn } from "../services/database";
 import { fileRules, videoRules } from "../validator";
 
-export const messageHandlerNHelper = (id: string, msg: string) => {
+export const messageHandlerHelper = (id: string, msg: string) => {
   let message: {};
   try {
     message = JSON.parse(msg);
@@ -19,5 +19,5 @@ export const messageHandlerNHelper = (id: string, msg: string) => {
     throw new Error("Message is not video or file");
   }
 
-  db.set(serviceId, JSON.stringify({ id: message }));
+  dbOwn.set(id, msg);
 };

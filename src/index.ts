@@ -17,8 +17,8 @@ import bodyParser from "body-parser";
 import { logMiddleware } from "./logger/log.middleware";
 import * as locals from "./locals";
 import wsRouter from "./apis/wss.route";
-import { videoRules } from "./validator";
-import { make } from "simple-body-validator";
+import { messageHandlerHelper } from "./helpers";
+import { dbOwn } from "./services/database";
 
 const app = express();
 const pinoLogger = logMiddleware("wss");
@@ -48,10 +48,12 @@ const bootstrap = async () => {
       ws.on("message", (msg: string) => {
         console.log("receive:", msg.toString());
         ws.send(`${msg} was sent`);
+        messageHandlerHelper(id, msg.toString());
       });
 
       ws.on("close", () => {
         delete clients[id];
+        dbOwn.delete(id);
         console.log(`${id} left`);
       });
 
@@ -68,7 +70,6 @@ const bootstrap = async () => {
       ws.close();
       process.exit();
     });
-    
   } catch (e) {
     console.log(e);
   }

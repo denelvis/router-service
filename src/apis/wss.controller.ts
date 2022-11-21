@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { WebSocket } from "ws";
 
-import { db } from "../services/database";
+import { dbMain } from "../services/database";
 
 class WssController {
   async listFilesById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const files = db.get(id);
+      const files = dbMain.get(id);
 
       return res.status(200).send({ [id]: files });
     } catch (e) {
@@ -17,7 +17,7 @@ class WssController {
 
   async listAllFiles(req: Request, res: Response, next: NextFunction) {
     try {
-      const files = db.JSON();
+      const files = dbMain.JSON();
 
       return res.status(200).send(files);
     } catch (e) {}
@@ -26,10 +26,9 @@ class WssController {
   async changeFiles(req: Request, res: Response, next: NextFunction) {
     try {
       const { id, files } = req.body;
-      db.set(id, JSON.stringify(files));
+      dbMain.set(id, JSON.stringify(files));
 
-      const ws: WebSocket = await req.app.get("socket");
-      ws.emit("message", "mess");
+      // const ws: WebSocket = await req.app.get("socket");
 
       return res.status(200).json({ id });
     } catch (e) {
