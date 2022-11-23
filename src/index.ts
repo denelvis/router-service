@@ -113,9 +113,5 @@ export class Service {
   public destroy() {
     this.wss.close();
     this.server.close(() => process.exit());
-    process.exit();
   }
 }
-
-const service = new Service(locals.PORT);
-service.run();
