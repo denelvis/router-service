@@ -15,7 +15,6 @@ import requestIp from "request-ip";
 import createError, { HttpError } from "http-errors";
 import bodyParser from "body-parser";
 
-import * as locals from "./locals";
 import { logMiddleware } from "./logger/log.middleware";
 import wsRouter from "./apis/wss.route";
 import { disconnectHelper, sendToDb } from "./helpers";
