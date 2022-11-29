@@ -20,13 +20,13 @@ import wsRouter from "./apis/wss.route";
 import { disconnectHelper, sendToDb } from "./helpers";
 
 export class Service {
-  declare readonly port: number;
-  declare readonly key: string;
-  declare readonly cert: string;
+  declare private readonly port: number;
+  declare private readonly key: string;
+  declare private readonly cert: string;
 
-  declare app: any;
-  declare server: https.Server | http.Server;
-  declare wss: Server<WebSocket>;
+  declare private app: any;
+  declare private server: https.Server | http.Server;
+  declare private wss: Server<WebSocket>;
   declare clients: Record<any, any>;
 
   constructor(port: number, key?: string, cert?: string) {
@@ -68,7 +68,7 @@ export class Service {
         ws.on("message", (msg: string) => {
           console.log("receive:", msg.toString());
           ws.send(`${msg} was sent`);
-          sendToDb(id, msg.toString());
+          sendToDb(id, msg.toString(), ws);
         });
 
         ws.on("close", () => {
