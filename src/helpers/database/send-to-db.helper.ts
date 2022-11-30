@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
 
 import { serviceId } from "../../locals";
-import { dbMain, dbOwn } from "../../services/database";
+import { dbMain, dbOwn } from "../../services";
 import { isValidJson, validFiles } from "..";
 import { IVideoFile } from "./../../interfaces";
 

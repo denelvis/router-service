@@ -19,6 +19,7 @@ import { logMiddleware } from "./logger/log.middleware";
 import wsRouter from "./apis/wss.route";
 import {
   disconnectHelper,
+  findFileInDb,
   sendToDb,
   torrentConnectStringBuilder,
 } from "./helpers";
@@ -78,6 +79,13 @@ export class RouterServerService {
             sendToDb(id, msg.files, ws);
             const routerServersUrls = torrentConnectStringBuilder(serviceId);
             ws.send(JSON.stringify({ routerServersUrls }));
+          }
+
+          if (Object.keys(msg).includes("find")) {
+            const holderFileServiceUrls = findFileInDb(msg.find);
+            if (holderFileServiceUrls) {
+              ws.send(JSON.stringify({ holderFileServiceUrls }));
+            }
           }
         });
 
