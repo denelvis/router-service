@@ -17,16 +17,22 @@ import bodyParser from "body-parser";
 
 import { logMiddleware } from "./logger/log.middleware";
 import wsRouter from "./apis/wss.route";
-import { disconnectHelper, sendToDb } from "./helpers";
+import {
+  disconnectHelper,
+  sendToDb,
+  torrentConnectStringBuilder,
+} from "./helpers";
+import { BitTorrentService } from "./torrent";
+import { serviceId } from "./locals";
 
-export class Service {
-  declare private readonly port: number;
-  declare private readonly key: string;
-  declare private readonly cert: string;
+export class RouterServerService {
+  private declare readonly port: number;
+  private declare readonly key: string;
+  private declare readonly cert: string;
 
-  declare private app: any;
-  declare private server: https.Server | http.Server;
-  declare private wss: Server<WebSocket>;
+  private declare app: any;
+  private declare server: https.Server | http.Server;
+  private declare wss: Server<WebSocket>;
   declare clients: Record<any, any>;
 
   constructor(port: number, key?: string, cert?: string) {
@@ -65,10 +71,14 @@ export class Service {
         const id = randomUUID();
         this.clients[id] = ws;
 
-        ws.on("message", (msg: string) => {
-          console.log("receive:", msg.toString());
-          ws.send(`${msg} was sent`);
-          sendToDb(id, msg.toString(), ws);
+        ws.on("message", (message: string) => {
+          const msg = JSON.parse(message.toString());
+
+          if (Object.keys(msg).includes("files")) {
+            sendToDb(id, msg.files, ws);
+            const routerServersUrls = torrentConnectStringBuilder(serviceId);
+            ws.send(JSON.stringify({ routerServersUrls }));
+          }
         });
 
         ws.on("close", () => {
@@ -76,17 +86,13 @@ export class Service {
           disconnectHelper(id);
           console.log(`${id} left`);
         });
-
-        ws.send("websocket server connected");
       });
-
-      wss.on("message", (msg) => console.log(msg));
 
       server.listen(this.port, () =>
         console.log(`server started on ${this.port}`)
       );
 
-      app.use(function (req, res, next) {
+      app.use(function (req: Request, res: Response, next: NextFunction) {
         next(createError(404));
       });
 
@@ -114,3 +120,5 @@ export class Service {
     this.server.close(() => process.exit());
   }
 }
+
+BitTorrentService();

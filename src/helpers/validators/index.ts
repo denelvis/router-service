@@ -1,2 +1,2 @@
-export * from "./body-validator.helper";
+export * from "./files-validator.helper";
 export * from "./json-validator.helper";
